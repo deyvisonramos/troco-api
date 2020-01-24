@@ -30,16 +30,20 @@ namespace ChangeApi.Domain.Services
             var amountToChange = totalAmount - amountPaid;
             
             if (amountToChange >= 0)
-            {
-                var message = "Nothing to change. There is lack of money in this payment or it doesn't need a change.";
-                AddError("amounts", message);
-                return message;
-            }
+                AddError("amounts", "Nothing to change. There is lack of money in this payment or it doesn't need a change.");
+
+
+            amountToChange *= -1;
+
+            if (amountToChange > 9999.99M)
+                AddError("amount", "This amount is too big to change");
+
+            if (!IsValid)
+                return string.Empty;
 
             Notes.Clear();
             Coins.Clear();
 
-            amountToChange *= -1;
             var intAmount = (int) amountToChange;
             var decimalAmount = (int)((amountToChange - intAmount) * 100);
             var notesAndCoinsToGiveBack = new List<string>();
